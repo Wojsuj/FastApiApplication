@@ -44,12 +44,12 @@ def read_image(image_id: int, db: Session = Depends(get_db)):
 
 @app.get("/images/{size}", response_model=List[schemas.Image])
 def create_thumbnail(size: str , db: Session = Depends(get_db)):
-
+    if not (len(db.query(models.Image).all())): raise HTTPException(status_code=404, detail="404 Error!")
     width, height = helper_functions.get_image_size(size)
     random_id = helper_functions.get_random_id(db, models.Image)
     db_image_name = crud.get_image(db, image_id=random_id).name
-
     image = helper_functions.read_image(db_image_name)
     resized_image = helper_functions.resize_image(image, width, height)
     png_image = helper_functions.change_to_png(resized_image)
+
     return StreamingResponse(io.BytesIO(png_image.tobytes()), media_type="image/png")
