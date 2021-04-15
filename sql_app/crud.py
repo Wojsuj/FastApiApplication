@@ -13,9 +13,10 @@ def get_image(db: Session, image_id: int):
 def get_image_by_name(db: Session, name: str):
     return db.query(models.Image).filter(models.Image.name == name).first()
 
-def create_image(db: Session, item: schemas.ImageCreate, image_id: int):
-    db_item = models.Image(**item.dict(), owner_id=image_id)
-    db.add(db_item)
+def create_image(db: Session, image: schemas.ImageCreate):
+    image_name = image.name
+    db_image = models.Image(name = image_name)
+    db.add(db_image)
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    db.refresh(db_image)
+    return db_image
