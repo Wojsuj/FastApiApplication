@@ -7,5 +7,4 @@ from .database import Base
 class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    is_in_cache = Column(Boolean, default=False)
+    path = Column(String, index=True)

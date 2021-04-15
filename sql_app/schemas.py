@@ -4,8 +4,7 @@ from pydantic import BaseModel, HttpUrl
 
 
 class ImageBase(BaseModel):
-    name: str
-    is_in_cache: bool
+    path: str
 
 class ImageCreate(ImageBase):
     pass
