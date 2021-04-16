@@ -6,10 +6,10 @@ from .database import SessionLocal, engine
 from fastapi import FastAPI, File, UploadFile
 import io
 from starlette.responses import StreamingResponse
-from Scripts import helper_functions
+from functional_module import helper_functions
 from pymemcache.client import base
-import shutil
-from fastapi.responses import JSONResponse
+
+
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
@@ -26,21 +26,18 @@ def get_db():
 
 
 @app.post("/images/")
-async def image(image: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_image(image: UploadFile = File(...), db: Session = Depends(get_db)):
     path = f"images/{image.filename}"
-    image_path = crud.get_image_by_path(db, path=path)
+    image_path = crud.get_image_by_path(db = db, path=path)
     if image_path is not None:
         raise HTTPException(status_code=500, detail="Image already exist in database!")
-
-    with open(f"images/{image.filename}", "wb") as buffer:
-        shutil.copyfileobj(image.file, buffer)
-
+    helper_functions.save_image_to_disk(image = image)
     crud.create_image(db=db, image_path = path)
     return {"filename": image.filename}
 
 
-@app.get("/images/", response_model=List[schemas.Image])
-def read_images(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+@app.get("/images2/", response_model=List[schemas.Image])
+def read_all_images(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     images = crud.get_images(db, skip=skip, limit=limit)
     return images
 
@@ -55,19 +52,17 @@ def read_image(image_id: int, db: Session = Depends(get_db)):
 
 @app.get("/images/{size}", response_model=List[schemas.Image])
 async def create_thumbnail(size: str , db: Session = Depends(get_db)):
-    images_amount = helper_functions.items_amount(db, models.Image)
-    if images_amount == 0: raise HTTPException(status_code=404, detail="404 Error!")
 
-    cached_image_name = cache.get(size)
+    cached_image_path = cache.get(key = size)
 
-    if cached_image_name is not None:
-        cached_image_name = cached_image_name.decode('utf-8')
-        cached_image = helper_functions.get_image(size, cached_image_name)
+    if cached_image_path is not None:
+        cached_image_path = cached_image_path.decode('utf-8')
+        cached_image = helper_functions.load_image_at_given_path(size = size, image_path=cached_image_path)
         return StreamingResponse(io.BytesIO(cached_image.tobytes()), media_type="image/png")
 
     else:
-        image_name, random_image = helper_functions.get_random_image(db, size)
-        cached_image_name = image_name
-        cache.set(size, cached_image_name, 5)
+        image_path, random_image = helper_functions.load_random_image(db = db, size = size)
+        cached_image_path = image_path
+        cache.set(key = size, value = cached_image_path, expire = 60*60)
 
     return StreamingResponse(io.BytesIO(random_image.tobytes()), media_type="image/png")
