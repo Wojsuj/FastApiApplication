@@ -18,6 +18,7 @@ engine_empty = create_engine(SQLALCHEMY_DATABASE_EMPTY_URL)
 SessionTest = sessionmaker(bind=engine)
 SessionTestEmpty = sessionmaker(bind=engine_empty)
 
+test_image_path = "tests/images/test.jpg"
 #Tests
 
 #get_thumbnail_size function tests:
@@ -59,7 +60,6 @@ def test_random_id_should_not_pass_empty_database():
 #read_image function tests:
 
 def test_read_image_should_return_image():
-    test_image_path = "tests/images/test.jpg"
     image = helper_functions.read_image(image_path=test_image_path)
     assert not type(image) is not np.ndarray, "Returned image is not nd.array"
 
@@ -72,13 +72,11 @@ def test_read_image_should_not_pass_wrong_type():
 #resize_image function tests:
 
 def test_resize_image_should_not_enlarge_thumbnail():
-    test_image_path = "tests/images/test.jpg"
     test_image = cv2.imread(test_image_path)
     with pytest.raises(HTTPException):
         resized_image = helper_functions.resize_image(image=test_image, resize_width=1000, resize_height=2000)
 
 def test_resize_image_should_return_image():
-    test_image_path = "tests/images/test.jpg"
     test_image = cv2.imread(test_image_path)
     resized_image = helper_functions.resize_image(image=test_image, resize_width=20, resize_height=20)
     assert not type(resized_image) is not np.ndarray, "Returned image is not nd.array"
@@ -87,7 +85,7 @@ def test_resize_image_should_return_image():
 #change_image_to_png_format tests:
 
 def test_change_image_to_png_format_should_return_image():
-    test_image_path = "tests/images/test.jpg"
+
     test_image = cv2.imread(test_image_path)
     png_image = helper_functions.change_image_to_png_format(image = test_image)
     assert not type(png_image) is not np.ndarray, "Returned image is not nd.array"
@@ -117,7 +115,6 @@ def load_random_image_should_return_image_in_tuple():
 #load_image_at_given_path tests:
 
 def load_image_at_given_path_should_return_image():
-    test_image_path = "tests/images/test.jpg"
     size = "50x50"
     path, image = helper_functions.load_image_at_given_path(image_path = test_image_path, size = size)
     assert not type(image) is not np.ndarray, "Returned type is not a np.ndarray"
@@ -127,7 +124,6 @@ def load_image_at_given_path_should_return_image():
 
 def test_get_image_size_should_return_int():
     errors = []
-    test_image_path = "tests/images/test.jpg"
     test_image = cv2.imread(test_image_path)
     width, height = helper_functions.get_image_size(test_image)
     if type(width) is not int: errors.append("Width is not an int")
@@ -135,7 +131,6 @@ def test_get_image_size_should_return_int():
     assert not errors, "Errors occured:\n{}".format("\n".join(errors))
 
 def test_get_image_size_should_return_tuple():
-    test_image_path = "tests/images/test.jpg"
     test_image = cv2.imread(test_image_path)
     returned_tuple = helper_functions.get_image_size(test_image)
 
