@@ -1,4 +1,4 @@
-from sql_app import models, crud
+from app import models, crud
 import random
 import cv2
 import numpy as np
@@ -6,6 +6,7 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 import shutil
 import os
+
 def get_thumbnail_size(size: str) -> tuple:
 
     try: width, height = size.split("x")
@@ -21,6 +22,7 @@ def get_thumbnail_size(size: str) -> tuple:
 def get_random_id(db: Session, item : models) -> int:
 
     items_amount = len(db.query(item).all())
+    print(items_amount)
     if items_amount == 0:  raise HTTPException(status_code=404,
                             detail="Error 404! No items in database!")
     random_id = random.randint(1, items_amount)

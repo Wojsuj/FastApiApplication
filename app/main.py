@@ -1,7 +1,8 @@
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from . import crud, models, schemas
+from .crud import get_image_by_path, create_image
+from . import  models, schemas
 from .database import SessionLocal, engine
 from fastapi import FastAPI, File, UploadFile
 import io
@@ -28,11 +29,11 @@ def get_db():
 @app.post("/images/")
 async def upload_image(image: UploadFile = File(...), db: Session = Depends(get_db)):
     path = f"images/{image.filename}"
-    image_path = crud.get_image_by_path(db = db, path=path)
+    image_path = get_image_by_path(db = db, path=path)
     if image_path is not None:
         raise HTTPException(status_code=500, detail="Image already exist in database!")
     helper_functions.save_image_to_disk(image = image)
-    crud.create_image(db=db, image_path = path)
+    create_image(db=db, image_path = path)
     return {"filename": image.filename}
 
 

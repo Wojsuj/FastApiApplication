@@ -1,13 +1,11 @@
 from functional_module import helper_functions
 import pytest
-from sql_app import models
+from app import models
 from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import numpy as np
 import cv2
-
-
 
 #Connect to test databases
 SQLALCHEMY_DATABASE_URL = "sqlite:///./tests/test_databases/test_database.db"
