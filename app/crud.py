@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from . import models
 
 
 def get_images(db: Session, skip: int = 0, limit: int = 100):

@@ -38,7 +38,7 @@ async def upload_image(image: UploadFile = File(...), db: Session = Depends(get_
 
 
 @app.get("/images/{size}", response_model=List[schemas.Image])
-async def create_thumbnail(size: str , db: Session = Depends(get_db)):
+async def show_thumbnail(size: str , db: Session = Depends(get_db)):
 
     cached_image_path = cache.get(key = size)
 

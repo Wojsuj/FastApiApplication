@@ -22,7 +22,6 @@ def get_thumbnail_size(size: str) -> tuple:
 def get_random_id(db: Session, item : models) -> int:
 
     items_amount = len(db.query(item).all())
-    print(items_amount)
     if items_amount == 0:  raise HTTPException(status_code=404,
                             detail="Error 404! No items in database!")
     random_id = random.randint(1, items_amount)
@@ -58,7 +57,6 @@ def load_random_image(db:Session , size: str) -> tuple:
 def load_image_at_given_path(size: str, image_path: str) -> np.ndarray:
     width, height = get_thumbnail_size(size = size)
     image = read_image(image_path = image_path)
-    print(image_path)
     resized_image = resize_image(image = image, resize_width = width, resize_height= height)
     png_image = change_image_to_png_format(image = resized_image)
     return png_image
